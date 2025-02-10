@@ -1,19 +1,46 @@
 "use client";
 
-import { useMutation, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import Link from "next/link";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   return (
     <>
       <header className="sticky top-0 z-10 bg-background p-4 border-b-2 border-slate-200 dark:border-slate-800 flex flex-row justify-between items-center">
-        Convex + Next.js
+        Convex + Next.js + Convex Auth
+        <SignOutButton />
       </header>
-      <main className="p-8 flex flex-col gap-16">
-        <h1 className="text-4xl font-bold text-center">Convex + Next.js</h1>
+      <main className="p-8 flex flex-col gap-8">
+        <h1 className="text-4xl font-bold text-center">
+          Convex + Next.js + Convex Auth
+        </h1>
         <Content />
       </main>
+    </>
+  );
+}
+
+function SignOutButton() {
+  const { isAuthenticated } = useConvexAuth();
+  const { signOut } = useAuthActions();
+  const router = useRouter();
+  return (
+    <>
+      {isAuthenticated && (
+        <button
+          className="bg-slate-200 dark:bg-slate-800 text-foreground rounded-md px-2 py-1"
+          onClick={() =>
+            void signOut().then(() => {
+              router.push("/signin");
+            })
+          }
+        >
+          Sign out
+        </button>
+      )}
     </>
   );
 }
@@ -54,7 +81,7 @@ function Content() {
         Numbers:{" "}
         {numbers?.length === 0
           ? "Click the button!"
-          : numbers?.join(", ") ?? "..."}
+          : (numbers?.join(", ") ?? "...")}
       </p>
       <p>
         Edit{" "}
